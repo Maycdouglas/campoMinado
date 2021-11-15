@@ -5,8 +5,30 @@ import params from './src/params';
 import Field from './src/components.js/Field';
 import Mine from './src/components.js/Mine';
 import Flag from './src/components.js/Flag';
+import MineField from './src/components.js/MineField';
+import { createMinedBoard } from './src/functions';
 
 export default class App extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = this.createState()
+  }
+
+  minesAmount = () => {
+    const cols = params.getColumnsAmount()
+    const rows = params.getRowsAmount()
+    return Math.ceil(cols * rows * params.difficultLevel)
+  }
+
+  createState = () => {
+    const cols = params.getColumnsAmount()
+    const rows = params.getRowsAmount()
+    return {
+      board: createMinedBoard(rows, cols, this.minesAmount())
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -15,7 +37,7 @@ export default class App extends Component {
             {params.getRowsAmount()}x{params.getColumnsAmount()}
         </Text>
         <StatusBar style="auto" />
-        <Field></Field>
+        {/* <Field></Field>
         <Field opened/>
         <Field opened nearMines={1}/>
         <Field opened nearMines={2}/>
@@ -27,7 +49,11 @@ export default class App extends Component {
         <Field flagged/>
         <Field flagged opened/>
         <Mine/>
-        <Flag bigger/>
+        <Flag bigger/> */}
+        <View style={styles.board}>
+          <MineField board={this.state.board} />
+        </View>
+
       </View>
     );
   }
@@ -42,11 +68,22 @@ export default class App extends Component {
 //   );
 // }
 
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+// });
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
+  board: {
+    alignItems: 'center',
+    backgroundColor: '#AAA',
+  }
 });
