@@ -1,12 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Alert } from 'react-native';
 import params from './src/params';
 import Field from './src/components.js/Field';
 import Mine from './src/components.js/Mine';
 import Flag from './src/components.js/Flag';
 import MineField from './src/components.js/MineField';
-import { createMinedBoard } from './src/functions';
+import { 
+  createMinedBoard,
+  cloneBoard,
+  openField,
+  hasExplosion,
+  wonGame,
+  showMines,
+  invertFlag
+} from './src/functions';
 
 export default class App extends Component {
 
@@ -25,8 +33,41 @@ export default class App extends Component {
     const cols = params.getColumnsAmount()
     const rows = params.getRowsAmount()
     return {
-      board: createMinedBoard(rows, cols, this.minesAmount())
+      board: createMinedBoard(rows, cols, this.minesAmount()),
+      won: false,
+      lost: false
     }
+  }
+
+  onOpenField = (row, column) => {
+    const board = cloneBoard(this.state.board)
+    openField(board, row, column)
+    const lost = hasExplosion(board)
+    const won = wonGame(board)
+
+    if (lost) {
+      showMines(board)
+      Alert.alert('Perdeeeeu!', 'Que buuuuurro!')
+    }
+
+    if (won) {
+      Alert.alert('Parabéns!!!', 'Você venceu!')
+    }
+
+    this.setState({ board, lost, won })
+
+  }
+
+  onSelectField = (row, column) => {
+    const board = cloneBoard(this.state.board)
+    invertFlag(board, row, column)
+    const won = wonGame(board)
+
+    if(won) {
+      Alert.alert('Parabéns', 'Você Venceu!')
+    }
+
+    this.setState({ board, won })
   }
 
   render() {
@@ -51,7 +92,9 @@ export default class App extends Component {
         <Mine/>
         <Flag bigger/> */}
         <View style={styles.board}>
-          <MineField board={this.state.board} />
+          <MineField board={this.state.board} 
+                     onOpenField={this.onOpenField}
+                     onSelectField={this.onSelectField}/>
         </View>
 
       </View>

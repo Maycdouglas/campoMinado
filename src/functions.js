@@ -38,7 +38,9 @@ const createMinedBoard = (rows, columns, minesAmount) => {
 
 const cloneBoard = board => {
     return board.map(rows => {
-        return { ...field }
+        return rows.map(field => {
+            return { ...field }
+        })
     })
 }
 
@@ -47,14 +49,16 @@ const getNeighbors = (board, row, column) => {
     const rows = [row - 1, row, row + 1]
     const columns = [column - 1, column, column + 1]
     rows.forEach(r => {
-        const different = r !== row || c !== column
-        const validRow = r >= 0 && r < board.length
-        const validColumn = c >= 0 && c < board.length
-        if(different && validRow && validColumn) {
-            neighbors.push(board[r][c])
-        }
+        columns.forEach(c => {
+            const different = r !== row || c !== column
+            const validRow = r >= 0 && r < board.length
+            const validColumn = c >= 0 && c < board[0].length
+            if(different && validRow && validColumn) {
+                neighbors.push(board[r][c])
+            }
+        })     
     })
-
+    return neighbors
 }
 
 const safeNeighborhood = (board, row, column) => {
@@ -83,11 +87,17 @@ const pendding = field => (field.mined && !field.flagged) || (!field.mined && !f
 const wonGame = board => fields(board).filter(pendding).length === 0
 const showMines = board => fields(board).filter(field => field.mined).forEach(field => field.opened = true)
 
+const invertFlag = (board, row, column) => {
+    const field = board[row][column]
+    field.flagged = !field.flagged
+}
+
 export { 
     createMinedBoard,
     cloneBoard,
     openField,
     hasExplosion,
     wonGame,
-    showMines
+    showMines,
+    invertFlag
 }
