@@ -6,6 +6,7 @@ import Field from './src/components.js/Field';
 import Mine from './src/components.js/Mine';
 import Flag from './src/components.js/Flag';
 import MineField from './src/components.js/MineField';
+import Header from './src/components.js/Header';
 import { 
   createMinedBoard,
   cloneBoard,
@@ -13,7 +14,8 @@ import {
   hasExplosion,
   wonGame,
   showMines,
-  invertFlag
+  invertFlag,
+  flagsUsed
 } from './src/functions';
 
 export default class App extends Component {
@@ -73,6 +75,7 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Header flagsLeft={this.minesAmount() - flagsUsed(this.state.board)} onNewGame={() => this.setState(this.createState())}/>
         <Text>CAMPO MINADO</Text>
         <Text>Tamanho da grade:
             {params.getRowsAmount()}x{params.getColumnsAmount()}
